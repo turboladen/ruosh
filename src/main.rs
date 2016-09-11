@@ -1,11 +1,12 @@
 extern crate readline;
-extern crate mrusty;
+extern crate ruosh;
+extern crate ruru;
 
 use readline::*;
-use mrusty::*;
+use ruosh::*;
 
 fn main() {
-    let mruby = Mruby::new();
+    internal_init();
 
     loop {
         let input = match readline("ruosh> ") {
@@ -16,18 +17,17 @@ fn main() {
             },
         };
 
-        if input == "quit" {
+        if input == "quit" || input == "exit" {
+            println!("Quitting...");
             break;
         }
-        // add words that start with 'a' to the history to demonstrate
-        else if input[0 .. 1] == "a".to_string() {
-            readline::add_history(input.as_ref());
-        }
 
-        println!("Input: '{}'", input);
-        let ruby_command = format!("x = {}; x.to_s", input);
-        println!("rcmd: '{}'", ruby_command);
-        let ruby_result = mruby.run(&ruby_command).unwrap();
-        println!("Ruby: {}", ruby_result.to_str().unwrap());
+        readline::add_history(input.as_ref());
+
+        // println!("Input: '{}'", input);
+        // let ruby_command = format!("x = {}; x.to_s", input);
+        // println!("rcmd: '{}'", ruby_command);
+        // let ruby_result = mruby.run(&ruby_command).unwrap();
+        // println!("Ruby: {}", ruby_result.to_str().unwrap());
     }
 }

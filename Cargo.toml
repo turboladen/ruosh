@@ -5,4 +5,7 @@ authors = ["Steve Loveless <steve.loveless@gmail.com>"]
 
 [dependencies]
 readline = { git = "https://github.com/shaleh/rust-readline.git" }
-mrusty = "*"
+ruru = "*"
+
+[lib]
+crate-type = ["dylib", "rlib"]
