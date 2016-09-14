@@ -26,7 +26,7 @@ pub extern fn init() -> bool {
     let mut rfile = Class::new("RFile");
     rfile.def_self("directory?", is_directory);
 
-    Class::new("RFile").define(|itself| {
+    Class::from_existing("RFile").define(|itself| {
         itself.def("meow", meow);
     });
 
