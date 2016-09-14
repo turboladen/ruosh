@@ -1,8 +1,8 @@
-extern crate readline;
+extern crate rustyline;
 extern crate ruru;
 extern crate ruosh;
 
-use readline::*;
+pub use rustyline::Editor;
 use ruosh::*;
 use ruru::{Class, AnyObject, RString};
 use ruru::traits::Object;
@@ -20,12 +20,18 @@ fn rputs(ruby_result: AnyObject) {
 
 fn main() {
     internal_init();
+    let mut rl = rustyline::Editor::<()>::new();
 
     loop {
-        let input = match readline("ruosh> ") {
-            Some(input) => input,
-            None => {
-                println!("");
+        let readline = rl.readline(">> ");
+        let input = match readline {
+            Ok(line) => {
+                println!("Line: {:?}", line);
+                rl.add_history_entry(&line);
+                line
+            },
+            Err(_)   => {
+                println!("No input");
                 break;
             },
         };
@@ -35,7 +41,6 @@ fn main() {
             break;
         }
 
-        readline::add_history(input.as_ref());
         let ruby_result = reval(input);
         rputs(ruby_result);
     }
