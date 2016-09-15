@@ -5,9 +5,9 @@ authors = ["Steve Loveless <steve.loveless@gmail.com>"]
 
 [dependencies]
 rustyline = "1.0.0"
-ruru = "*"
 ssh2 = "*"
 thrussh_client = "*"
+mrusty = "*"
 
 [lib]
 crate-type = ["dylib", "rlib"]
