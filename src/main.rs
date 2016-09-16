@@ -22,36 +22,6 @@ fn rputs(ruby_result: AnyObject) {
 
 static PROMPT: &'static str = "\x1b[1;32m>>\x1b[0m ";
 
-fn run_ruby_loop() {
-    let mut rl = rustyline::Editor::<()>::new();
-    let mut ruby_code = String::new();
-    let sub_shell = Class::from_existing("Ruosh").new_instance(vec![]);
-
-    loop {
-        let ruby_readline = rl.readline("rubby>> ");
-
-        let input = match ruby_readline {
-            Ok(line) => {
-                rl.add_history_entry(&line);
-                line
-            },
-            Err(_)   => {
-                println!("No input; breaking");
-                break;
-            },
-        };
-
-        // Done with Ruby input, so eval it
-        if input == "```" {
-            println!("code: {}", ruby_code);
-            reval(ruby_code, &sub_shell);
-            return
-        } else {
-            ruby_code = ruby_code + " " + &input + "\n";
-        }
-    }
-}
-
 fn main() {
     VM::init();
     VM::require("/Users/sloveless/Development/projects/ruosh/lib/ruosh/runner");
@@ -102,6 +72,36 @@ fn main() {
         } else {
             let ruby_result = reval(input, &main_thing);
             rputs(ruby_result);
+        }
+    }
+}
+
+fn run_ruby_loop() {
+    let mut rl = rustyline::Editor::<()>::new();
+    let mut ruby_code = String::new();
+    let sub_shell = Class::from_existing("Ruosh").new_instance(vec![]);
+
+    loop {
+        let ruby_readline = rl.readline("rubby>> ");
+
+        let input = match ruby_readline {
+            Ok(line) => {
+                rl.add_history_entry(&line);
+                line
+            },
+            Err(_)   => {
+                println!("No input; breaking");
+                break;
+            },
+        };
+
+        // Done with Ruby input, so eval it
+        if input == "```" {
+            println!("code: {}", ruby_code);
+            reval(ruby_code, &sub_shell);
+            return
+        } else {
+            ruby_code = ruby_code + " " + &input + "\n";
         }
     }
 }
