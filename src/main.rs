@@ -3,15 +3,13 @@ extern crate ruru;
 extern crate ruosh;
 
 pub use rustyline::Editor;
-use ruosh::*;
-use ruru::{Boolean, Class, AnyObject, RString, Symbol, VM};
+// use ruosh::*;
+use ruru::{Class, AnyObject, RString, Symbol, VM};
 use ruru::traits::Object;
 
 fn reval(code: String, shell: &AnyObject) -> AnyObject {
     let code = RString::new(code.as_str()).to_any_object();
-    println!("here");
 
-    // Class::from_existing("Ruosh").send("handle", vec![code, *binding])
     shell.send("run", vec![code])
 }
 
@@ -28,9 +26,8 @@ fn main() {
     // internal_init();
     let mut rl = rustyline::Editor::<()>::new();
     let runner = Class::from_existing("Ruosh")
-        .send("const_get", vec![Symbol::new("Runner").to_any_object()])
-        .class();
-    let main_thing = runner.new_instance(vec![]);
+        .send("const_get", vec![Symbol::new("Runner").to_any_object()]);
+    let main_thing = runner.to::<Class>().new_instance(vec![]);
 
     loop {
         let readline = rl.readline(PROMPT);
