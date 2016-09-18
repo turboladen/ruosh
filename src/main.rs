@@ -20,9 +20,7 @@ fn rputs(ruby_result: AnyObject) {
 static PROMPT: &'static str = "\x1b[1;32m>>\x1b[0m ";
 
 fn main() {
-    VM::init();
-    VM::require("/Users/sloveless/Development/projects/ruosh/lib/ruosh/runner");
-    // internal_init();
+    internal_init();
     let mut rl = rustyline::Editor::<()>::new();
     let runner = Class::from_existing("Ruosh")
         .send("const_get", vec![Symbol::new("Runner").to_any_object()]);

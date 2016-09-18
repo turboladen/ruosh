@@ -56,7 +56,7 @@ module Ruosh
       @command_history.push(command)
       result_object = command.run(@binding)
 
-      result = Result.new(result_object, cmd_number)
+      result = Ruosh::Result.new(result_object, cmd_number)
       @result_history.push(result)
       @last_error = result if result.error?
 
@@ -76,19 +76,6 @@ module Ruosh
       Kernel.eval("$last_result = #{@code}", binding)
     rescue => ex
       ex
-    end
-  end
-
-  class Result
-    attr_reader :object, :command_number
-
-    def initialize(object, command_number)
-      @object = object
-      @command_number = command_number
-    end
-
-    def error?
-      object.is_a?(Exception)
     end
   end
 end
