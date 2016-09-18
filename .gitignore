@@ -9,3 +9,5 @@ Cargo.lock
 .yardoc/
 
 tags
+
+Gemfile.lock
