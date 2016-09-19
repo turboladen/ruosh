@@ -1,6 +1,6 @@
 extern crate ruru;
 
-use ruru::{Class, VM};
+use self::ruru::{Class, VM};
 
 pub fn raise_argument_error(expected_count: usize, got_count: usize) {
     let message = format!("wrong number of arguments ({} for {})", expected_count, got_count);

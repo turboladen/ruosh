@@ -1,10 +1,10 @@
 extern crate ruru;
 
 use std::fs::metadata;
-use ruru::types::Argc;
-use ruru::{AnyObject, Boolean, Class, Object, NilClass, RString, VM};
+use self::ruru::types::Argc;
+use self::ruru::{AnyObject, Boolean, Class, Object, NilClass, RString, VM};
 
-use exceptions;
+use ruby::exceptions;
 
 extern fn is_directory(argc: Argc, argv: *const AnyObject, _: AnyObject) -> Boolean {
     let args = VM::parse_arguments(argc, argv);

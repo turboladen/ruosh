@@ -1,9 +1,9 @@
 extern crate ruru;
 
-use ruru::types::Argc;
-use ruru::{AnyObject, Boolean, Class, Fixnum, NilClass, Object, VM};
+use self::ruru::types::Argc;
+use self::ruru::{AnyObject, Boolean, Class, Fixnum, NilClass, Object, VM};
 
-use exceptions;
+use ruby::exceptions;
 
 extern fn is_error(_: Argc, _: *const AnyObject, itself: AnyObject) -> Boolean {
     let object = itself.instance_variable_get("@object");
