@@ -34,8 +34,8 @@ extern fn initialize(argc: Argc, argv: *const AnyObject, mut itself: AnyObject) 
 }
 
 pub extern fn init() {
-    Class::from_existing("Ruosh").define(|ruosh| {
-        ruosh.define_nested_class("Result", None).define(|itself| {
+    Class::from_existing("Rosh").define(|rosh| {
+        rosh.define_nested_class("Result", None).define(|itself| {
             itself.def("initialize", initialize);
             itself.def("error?", is_error);
         });

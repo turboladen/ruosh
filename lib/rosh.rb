@@ -1,10 +1,10 @@
 require 'ffi'
 
-module Ruosh
+module Rosh
   extend FFI::Library
-  ffi_lib './target/debug/libruosh.dylib'
+  ffi_lib './target/debug/librosh.dylib'
 
   attach_function :init_my_things, [], :void
 end
 
-Ruosh.init_my_things
+Rosh.init_my_things

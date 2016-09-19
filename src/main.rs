@@ -1,9 +1,9 @@
 extern crate rustyline;
 extern crate ruru;
-extern crate ruosh;
+extern crate rosh;
 
 pub use rustyline::Editor;
-use ruosh::*;
+use rosh::*;
 use ruru::{AnyObject, Class, Object, RString, Symbol};
 
 fn reval(code: String, shell: &AnyObject) -> AnyObject {
@@ -17,12 +17,12 @@ fn rputs(ruby_result: AnyObject) {
     Class::from_existing("Kernel").send("puts", vec![inspected]);
 }
 
-static PROMPT: &'static str = "\x1b[1;32m>>\x1b[0m ";
+static PROMPT: &'static str = "\x1b[1;32mrosh>>\x1b[0m ";
 
 fn main() {
     internal_init();
     let mut rl = rustyline::Editor::<()>::new();
-    let runner = Class::from_existing("Ruosh")
+    let runner = Class::from_existing("Rosh")
         .send("const_get", vec![Symbol::new("Runner").to_any_object()]);
     let main_thing = unsafe { runner.to::<Class>().new_instance(vec![]) };
 
@@ -31,7 +31,6 @@ fn main() {
 
         let input = match readline {
             Ok(line) => {
-                println!("Line: {:?}", line);
                 rl.add_history_entry(&line);
                 line
             },
@@ -73,7 +72,7 @@ fn main() {
 fn run_ruby_loop() {
     let mut rl = rustyline::Editor::<()>::new();
     let mut ruby_code = String::new();
-    let sub_shell = Class::from_existing("Ruosh").new_instance(vec![]);
+    let sub_shell = Class::from_existing("Rosh").new_instance(vec![]);
 
     loop {
         let ruby_readline = rl.readline("rubby>> ");

@@ -1,4 +1,4 @@
-module Ruosh
+module Rosh
   class Runner
     attr_reader :last_error, :command_history, :result_history, :input_history
 
@@ -12,6 +12,9 @@ module Ruosh
 
       # Set binding-specific $last_result
       eval('$last_result = nil', @binding)
+
+      # Give access to a FileSystem object
+      eval('$fs = Rosh::FileSystem.new', @binding)
     end
 
     # @param code [String]
@@ -50,13 +53,13 @@ module Ruosh
 
     # @param code [String]
     # @param cmd_number [Fixnum]
-    # @return [Ruosh::Result]
+    # @return [Rosh::Result]
     def run_code_chunk(code, cmd_number)
       command = Command.new(code, cmd_number)
       @command_history.push(command)
       result_object = command.run(@binding)
 
-      result = Ruosh::Result.new(result_object, cmd_number)
+      result = Rosh::Result.new(result_object, cmd_number)
       @result_history.push(result)
       @last_error = result if result.error?
 
@@ -76,6 +79,14 @@ module Ruosh
       Kernel.eval("$last_result = #{@code}", binding)
     rescue => ex
       ex
+    end
+  end
+
+  class File
+    attr_reader :name
+
+    def initialize(name)
+      @name = ::File.expand_path(name)
     end
   end
 end

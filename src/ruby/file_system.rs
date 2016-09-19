@@ -28,8 +28,8 @@ extern fn list_files(argc: Argc, argv: *const AnyObject, _: AnyObject) -> Array 
 }
 
 pub extern fn init() {
-    Class::from_existing("Ruosh").define(|ruosh| {
-        ruosh.define_nested_class("FileSystem", None).define(|itself| {
+    Class::from_existing("Rosh").define(|rosh| {
+        rosh.define_nested_class("FileSystem", None).define(|itself| {
             itself.def("list", list_files);
         });
     });

@@ -1,8 +1,8 @@
-require_relative 'lib/ruosh/version'
+require_relative 'lib/rosh/version'
 
 Gem::Specification.new do |s|
-  s.name = 'ruosh'
-  s.version = Ruosh::VERSION
+  s.name = 'rosh'
+  s.version = Rosh::VERSION
   s.author = 'Steve Loveless'
   s.homepage = 'http://github.com/turboladen/rosh'
   s.email = 'steve.loveless@gmail.com'

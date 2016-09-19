@@ -9,7 +9,7 @@ use self::ruru::VM;
 
 pub fn init_ruby() {
     VM::init();
-    VM::require("/Users/sloveless/Development/projects/ruosh/lib/ruosh/runner");
+    VM::require("/Users/sloveless/Development/projects/ruosh/lib/rosh/runner");
 
     result::init();
     file_system::init();
