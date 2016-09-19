@@ -4,9 +4,16 @@ use std::fs::metadata;
 use ruru::types::Argc;
 use ruru::{AnyObject, Boolean, Class, Object, NilClass, RString, VM};
 
+use exceptions;
+
 extern fn is_directory(argc: Argc, argv: *const AnyObject, _: AnyObject) -> Boolean {
-    let argv = VM::parse_arguments(argc, argv);
-    let file_name = argv[0].try_convert_to::<RString>().unwrap().to_string();
+    let args = VM::parse_arguments(argc, argv);
+
+    if args.len() != 1 {
+        exceptions::raise_argument_error(1usize, args.len());
+    }
+
+    let file_name = args[0].try_convert_to::<RString>().unwrap().to_string();
 
     let md = match metadata(file_name) {
         Ok(file_name) => file_name,

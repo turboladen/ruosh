@@ -3,6 +3,7 @@ extern crate ruru;
 pub mod file;
 // pub mod ssh;
 pub mod result;
+pub mod exceptions;
 
 use ruru::VM;
 

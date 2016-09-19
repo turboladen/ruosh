@@ -3,6 +3,8 @@ extern crate ruru;
 use ruru::types::Argc;
 use ruru::{AnyObject, Boolean, Class, Fixnum, NilClass, Object, VM};
 
+use exceptions;
+
 extern fn is_error(_: Argc, _: *const AnyObject, itself: AnyObject) -> Boolean {
     let object = itself.instance_variable_get("@object");
     let exception_class = Class::from_existing("Exception");
@@ -13,8 +15,12 @@ extern fn is_error(_: Argc, _: *const AnyObject, itself: AnyObject) -> Boolean {
 }
 
 extern fn initialize(argc: Argc, argv: *const AnyObject, mut itself: AnyObject) -> NilClass {
-    println!("here");
     let args = VM::parse_arguments(argc, argv);
+
+    if args.len() != 2 {
+        exceptions::raise_argument_error(2usize, args.len());
+    }
+
     let ref object = args[0];
     let ref command_number = args[1];
 
