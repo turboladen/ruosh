@@ -31,21 +31,20 @@ fn main() {
 
         let input = match readline {
             Ok(line) => {
-                rl.add_history_entry(&line);
-                line
+                match line.trim() {
+                    "exit" | "quit" => break,
+                    "" => continue,
+                    l => {
+                        rl.add_history_entry(&l);
+                        l.to_string()
+                    }
+                }
             },
             Err(_)   => {
                 println!("No input");
-                break;
-            },
+                continue;
+            }
         };
-
-        if input.is_empty() { continue };
-
-        if input == "quit" || input == "exit" {
-            println!("Quitting...");
-            break;
-        }
 
         if input == "```" {
             run_ruby_loop();
