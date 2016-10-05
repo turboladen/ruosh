@@ -1,15 +1,15 @@
-// pub mod ssh;
+pub mod ssh;
 pub mod ruby;
 
 #[no_mangle]
 pub extern fn init_my_things() {
     ruby::init_ruby();
-    // ssh::init();
+    ssh::init();
 }
 
 pub fn internal_init() {
     ruby::init_ruby();
-    // ssh::init();
+    ssh::init();
 }
 
 #[cfg(test)]

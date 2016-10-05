@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir.glob('{spec}/**/*')
   s.require_paths = %w[lib]
 
+  s.add_dependency 'ffi'
   s.add_development_dependency 'byebug'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'rspec', '~> 3.3'

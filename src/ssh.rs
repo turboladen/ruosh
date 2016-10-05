@@ -5,14 +5,49 @@ extern crate ruru;
 use std::net::TcpStream;
 use self::ssh2::Session;
 // use self::thrussh_client::*;
-use ruru::types::Argc;
-use ruru::{AnyObject, Boolean, Class, NilClass, RString, VM};
+use self::ruru::types::Argc;
+use self::ruru::{AnyObject, Class, Object, NilClass, RString, VM};
 // use std::io::Write;
 use std::path::Path;
 
-extern fn connect(_: Argc, _: *const AnyObject, _: AnyObject) -> NilClass {
-    // let tcp = TcpStream::connect("127.0.0.1:22").unwrap();
-    let tcp = TcpStream::connect("192.241.226.7:22").unwrap();
+use ruby::exceptions;
+
+struct SSH {
+    host: String,
+    port: u8,
+    username: String,
+    password: String,
+    identity_file: String
+}
+
+impl SSH {
+    pub fn new(host: String, username: String, password: String) -> SSH {
+        SSH {
+            host: host,
+            port: 22,
+            username: username,
+            password: password,
+            identity_file: "/Users/sloveless/.ssh/id_rsa.pub".to_string()
+        }
+    }
+
+    // Make sure to build a string that is: ip:port.
+    fn host_and_port(&self) -> String {
+        format!("{}:{}", self.host, self.port)
+    }
+}
+
+extern fn connect(argc: Argc, argv: *const AnyObject, _: AnyObject) -> NilClass {
+    let args = VM::parse_arguments(argc, argv);
+
+    if args.len() != 3 {
+        exceptions::raise_argument_error(1usize, args.len());
+    }
+
+    let (hostname, username, password) = extract_password_auth_args(args);
+
+    let my_ssh = SSH::new(hostname, username, password);
+    let tcp = TcpStream::connect(my_ssh.host_and_port().as_str()).unwrap();
     let mut sess = Session::new().unwrap();
 
     match sess.handshake(&tcp) {
@@ -23,40 +58,43 @@ extern fn connect(_: Argc, _: *const AnyObject, _: AnyObject) -> NilClass {
         }
     }
 
-    // match sess.userauth_password("sloveless", "voyageur##") {
-    let pubkey_file = Path::new("/Users/sloveless/.ssh/id_rsa.pub");
-    let privkey_file = Path::new("/Users/sloveless/.ssh/id_rsa");
-
-    match sess.userauth_pubkey_file("root", Some(pubkey_file), privkey_file, None) {
-        Ok(_) => println!("agent authed"),
+    match sess.userauth_password(my_ssh.username.as_str(), my_ssh.password.as_str()) {
+        Ok(_) => {
+            assert!(sess.authenticated());
+            println!("agent authed")
+        },
         Err(e) => {
             println!("auth failure: {}", e.message());
             return NilClass::new()
         }
     }
 
-    // // Make sure we succeeded
-    // assert!(sess.authenticated());
-    // let mut client = thrussh_client::Client::new();
-    // client.set_host("192.241.226.7");
-    // // client.set_auth_user("sloveless");
-    // // client.set_auth_password("voyageur##".to_string());
-    // println!("Valid auth methods: {:?}", client.session.valid_auth_methods());
-    // let mut client = client.connect().unwrap();
+    // let pubkey_file = Path::new("/Users/sloveless/.ssh/id_rsa.pub");
+    // let privkey_file = Path::new("/Users/sloveless/.ssh/id_rsa");
 
-    // if let Some(key) = client.authenticate().unwrap() {
-    //     client.learn_host(&key).unwrap();
-    //     assert!(client.authenticate().unwrap().is_none());
-    //     println!("connected");
+    // match sess.userauth_pubkey_file("sloveless", Some(pubkey_file), privkey_file, None) {
+    //     Ok(_) => println!("agent authed"),
+    //     Err(e) => {
+    //         println!("auth failure: {}", e.message());
+    //         return NilClass::new()
+    //     }
     // }
 
     NilClass::new()
 }
 
-pub extern fn init() {
-    let mut rfile = Class::new("RSSH");
+fn extract_password_auth_args(args: Vec<AnyObject>) -> (String, String, String) {
+    let hostname = args[0].try_convert_to::<RString>().unwrap().to_string();
+    let username = args[1].try_convert_to::<RString>().unwrap().to_string();
+    let password = args[2].try_convert_to::<RString>().unwrap().to_string();
 
-    Class::from_existing("RSSH").define(|itself| {
-        itself.def("connect", connect);
+    (hostname, username, password)
+}
+
+pub extern fn init() {
+    Class::from_existing("Rosh").define(|rosh| {
+        rosh.define_nested_class("SSH", None).define(|itself| {
+            itself.def("connect", connect);
+        });
     });
 }
