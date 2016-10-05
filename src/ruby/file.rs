@@ -2,7 +2,7 @@ extern crate ruru;
 
 use std::fs::metadata;
 use self::ruru::types::Argc;
-use self::ruru::{AnyObject, Boolean, Class, Object, NilClass, RString, VM};
+use self::ruru::{AnyObject, Boolean, Class, Object, RString, VM};
 
 use ruby::exceptions;
 
@@ -25,18 +25,11 @@ extern fn is_directory(argc: Argc, argv: *const AnyObject, _: AnyObject) -> Bool
     Boolean::new(md.is_dir())
 }
 
-extern fn meow(_: Argc, _: *const AnyObject, _: AnyObject) -> NilClass {
-    println!("MEOWWWWWWWWWWWWWWWWW");
-    NilClass::new()
-}
-
-pub extern fn init() -> bool {
-    let mut rfile = Class::new("RFile", None);
-    rfile.def_self("directory?", is_directory);
-
-    Class::from_existing("RFile").define(|itself| {
-        itself.def("meow", meow);
+pub extern fn init() {
+    Class::from_existing("Rosh").define(|rosh| {
+        rosh.define_nested_class("File", None).define(|itself| {
+            itself.def_self("directory?", is_directory);
+            // itself.def("initialize", initialize);
+        });
     });
-
-    true
 }
