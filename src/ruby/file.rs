@@ -1,29 +1,33 @@
 extern crate ruru;
 
+use std::error::Error;
 use std::fs::metadata;
-use self::ruru::types::Argc;
-use self::ruru::{AnyObject, Boolean, Class, Object, RString, VM};
+use self::ruru::{Boolean, Class, Object, RString, VM};
 
-use ruby::exceptions;
+class!(File);
 
-extern fn is_directory(argc: Argc, argv: *const AnyObject, _: AnyObject) -> Boolean {
-    let args = VM::parse_arguments(argc, argv);
+methods!(
+    File,
+    itself,
 
-    if args.len() != 1 {
-        exceptions::raise_argument_error(1usize, args.len());
-    }
-
-    let file_name = args[0].try_convert_to::<RString>().unwrap().to_string();
-
-    let md = match metadata(file_name) {
-        Ok(file_name) => file_name,
-        Err(_) => {
-            return Boolean::new(false)
+    fn is_directory(path: RString) -> Boolean {
+        if let Err(ref error) = path {
+            VM::raise(error.to_exception(), error.description());
         }
-    };
 
-    Boolean::new(md.is_dir())
-}
+        let file_name = path.unwrap().to_string();
+
+        let md = match metadata(file_name) {
+            Ok(file_name) => file_name,
+            Err(_) => {
+                return Boolean::new(false)
+            }
+        };
+
+        Boolean::new(md.is_dir())
+    }
+);
+
 
 pub extern fn init() {
     Class::from_existing("Rosh").define(|rosh| {

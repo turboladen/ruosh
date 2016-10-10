@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate ruru;
+
 pub mod ruby;
 
 #[no_mangle]
