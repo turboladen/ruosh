@@ -1,8 +1,11 @@
-extern crate rustyline;
 extern crate ruru;
+
+extern crate rustyline;
 extern crate rosh;
 
-pub use rustyline::Editor;
+use rustyline::Editor;
+use rustyline::completion::FilenameCompleter;
+use rustyline::error::ReadlineError;
 use rosh::*;
 use ruru::{AnyObject, Class, Object, RString, Symbol};
 
@@ -21,7 +24,16 @@ static PROMPT: &'static str = "\x1b[1;32mrosh>>\x1b[0m ";
 
 fn main() {
     internal_init();
-    let mut rl = rustyline::Editor::<()>::new();
+
+    let completer = FilenameCompleter::new();
+    let mut rl = Editor::new().history_ignore_space(true);
+    rl.set_completer(Some(completer));
+
+    if let Err(_) = rl.load_history("history.txt") {
+        println!("No previous history.");
+    }
+
+    // TODO: use the more recent way of getting this.
     let runner = Class::from_existing("Rosh")
         .send("const_get", vec![Symbol::new("Runner").to_any_object()]);
     let main_thing = unsafe { runner.to::<Class>().new_instance(vec![]) };
@@ -32,7 +44,10 @@ fn main() {
         let input = match readline {
             Ok(line) => {
                 match line.trim() {
-                    "exit" | "quit" => break,
+                    "exit" | "quit" => {
+                        rl.save_history("history.txt").unwrap();
+                        break
+                    },
                     "" => continue,
                     l => {
                         rl.add_history_entry(&l);
@@ -40,9 +55,17 @@ fn main() {
                     }
                 }
             },
-            Err(_)   => {
-                println!("No input");
-                continue;
+            Err(ReadlineError::Interrupted) => {
+                println!("CTRL-C");
+                continue
+            },
+            Err(ReadlineError::Eof) => {
+                println!("CTRL-D");
+                break
+            },
+            Err(err) => {
+                println!("Error: {:?}", err);
+                continue
             }
         };
 
