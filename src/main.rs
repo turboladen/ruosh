@@ -7,7 +7,7 @@ use rustyline::Editor;
 use rustyline::completion::FilenameCompleter;
 use rustyline::error::ReadlineError;
 use rosh::*;
-use ruru::{AnyObject, Class, Object, RString, Symbol};
+use ruru::{AnyObject, Class, Object, RString, VM};
 
 fn reval(code: String, shell: &AnyObject) -> AnyObject {
     let code = RString::new(code.as_str()).to_any_object();
@@ -33,10 +33,9 @@ fn main() {
         println!("No previous history.");
     }
 
-    // TODO: use the more recent way of getting this.
-    let runner = Class::from_existing("Rosh")
-        .send("const_get", vec![Symbol::new("Runner").to_any_object()]);
-    let main_thing = unsafe { runner.to::<Class>().new_instance(vec![]) };
+    let runner_instance = Class::from_existing("Rosh")
+        .get_nested_class("Runner")
+        .new_instance(vec![]);
 
     loop {
         let readline = rl.readline(PROMPT);
@@ -85,7 +84,7 @@ fn main() {
                 println!("Invalid line for require");
             }
         } else {
-            let ruby_result = reval(input, &main_thing);
+            let ruby_result = reval(input, &runner_instance);
             rputs(ruby_result);
         }
     }
