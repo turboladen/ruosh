@@ -7,7 +7,7 @@ use rustyline::Editor;
 use rustyline::completion::FilenameCompleter;
 use rustyline::error::ReadlineError;
 use rosh::*;
-use ruru::{AnyObject, Class, Object, RString, VM};
+use ruru::{AnyObject, Class, Object, RString};
 
 fn reval(code: String, shell: &AnyObject) -> AnyObject {
     let code = RString::new(code.as_str()).to_any_object();
@@ -70,19 +70,6 @@ fn main() {
 
         if input == "```" {
             run_ruby_loop();
-        } else if input.starts_with("require ") {
-            let words: Vec<&str> = input.split_whitespace().collect();
-
-            if words.len() == 2 {
-                let require_file = words[1];
-                require_file.replace("\"", "");
-                require_file.replace("'", "");
-
-                println!("requiring: {}", require_file);
-                // VM::require(require_file);
-            } else {
-                println!("Invalid line for require");
-            }
         } else {
             let ruby_result = reval(input, &runner_instance);
             rputs(ruby_result);
