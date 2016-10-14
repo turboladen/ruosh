@@ -8,7 +8,7 @@ class!(File);
 
 methods!(
     File,
-    itself,
+    _itself,
 
     fn is_directory(path: RString) -> Boolean {
         if let Err(ref error) = path {

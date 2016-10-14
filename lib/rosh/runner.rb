@@ -1,22 +1,5 @@
 module Rosh
   class Runner
-    attr_reader :last_error, :command_history, :result_history, :input_history
-
-    def initialize
-      @binding = Kernel.binding
-      @last_error = nil
-      @command_number = 0
-      @command_history = []
-      @result_history = []
-      @input_history = []
-
-      # Set binding-specific $last_result
-      eval('$last_result = nil', @binding)
-
-      # Give access to a FileSystem object
-      eval('$fs = Rosh::FileSystem.new', @binding)
-    end
-
     # @param code [String]
     # @return [Object]
     def run(code)
